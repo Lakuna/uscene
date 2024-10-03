@@ -1,0 +1,57 @@
+{
+	"name": "@lakuna/uscene",
+	"version": "1.0.0",
+	"description": "A scene graph implementation using μMath.",
+	"homepage": "https://uscene.lakuna.pw",
+	"bugs": {
+		"url": "https://github.com/Lakuna/uscene/issues",
+		"email": "travis@lakuna.pw"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Travis Martin",
+		"email": "travis@lakuna.pw",
+		"url": "https://www.lakuna.pw/"
+	},
+	"funding": {
+		"type": "individual",
+		"url": "https://github.com/sponsors/Lakuna"
+	},
+	"files": [
+		"dist",
+		"src"
+	],
+	"repository": {
+		"type": "git",
+		"url": "github:Lakuna/uscene"
+	},
+	"scripts": {
+		"build": "tsc",
+		"lint": "eslint src",
+		"doc": "typedoc src",
+		"beautify": "prettier . --write"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.6.0",
+		"@types/eslint": "^8.56.10",
+		"@types/eslint__js": "^8.42.3",
+		"@types/eslint-config-prettier": "^6.11.3",
+		"eslint": "^9.6.0",
+		"eslint-config-prettier": "^9.1.0",
+		"eslint-plugin-prettier": "^5.1.3",
+		"eslint-plugin-tsdoc": "^0.3.0",
+		"prettier": "^3.3.2",
+		"typedoc": "^0.26.1",
+		"typescript": "^5.5.3",
+		"typescript-eslint": "^8.0.0-alpha.41"
+	},
+	"exports": {
+		".": "./dist/index.js"
+	},
+	"types": "./dist/index.d.ts",
+	"type": "module",
+	"sideEffects": false,
+	"dependencies": {
+		"@lakuna/umath": "^1.3.8"
+	}
+}
