@@ -1,1 +1,1 @@
-export default "Hello, world!";
+export { default as Node } from "./Node.js";
