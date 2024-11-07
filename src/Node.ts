@@ -1,11 +1,12 @@
-import type { Matrix4Like, QuaternionLike, Vector3Like } from "@lakuna/umath";
 import {
+	type Matrix4Like,
 	createMatrix4Like,
 	fromRotationTranslationScale,
 	getRotation,
 	getScaling,
 	getTranslation,
 	identity,
+	multiply,
 	rotate,
 	rotateX,
 	rotateY,
@@ -15,23 +16,34 @@ import {
 	targetTo,
 	translate
 } from "@lakuna/umath/Matrix4";
-import { createQuaternionLike } from "@lakuna/umath/Quaternion";
-import { createVector3Like } from "@lakuna/umath/Vector3";
-import { multiply } from "@lakuna/umath/Vector4";
+import {
+	type QuaternionLike,
+	createQuaternionLike
+} from "@lakuna/umath/Quaternion";
+import { type Vector3Like, createVector3Like } from "@lakuna/umath/Vector3";
 
 /**
  * A node in a scene graph.
  * @public
  */
 export default class Node {
-	public constructor(parent?: Node) {
-		this.matrix = createMatrix4Like();
+	/**
+	 * Create a node in a scene graph.
+	 * @param parent - The parent of the node. Should only be `undefined` for the root of a scene graph.
+	 * @param enabled - Whether or not the node should be enabled.
+	 */
+	public constructor(parent?: Node, enabled = true) {
+		this.matrix = identity(createMatrix4Like());
+		this.enabled = enabled;
 		this.parent = parent;
 		this.childrenInternal = [];
 	}
 
 	/** The transformation matrix of this node relative to its parent. */
 	public matrix: Matrix4Like;
+
+	/** Whether or not this node is enabled. Disabled nodes and their descendents are not included in traversals. */
+	public enabled: boolean;
 
 	/** The translation of this node relative to its parent. */
 	public get translation(): Readonly<Float32Array & Vector3Like> {
@@ -58,12 +70,12 @@ export default class Node {
 		);
 	}
 
-	/** The scaling of this node relative to its parent. */
+	/** The scale of this node relative to its parent. */
 	public get scaling(): Float32Array & Vector3Like {
 		return getScaling(this.matrix, createVector3Like());
 	}
 
-	/** The scaling of this node relative to its parent. */
+	/** The scale of this node relative to its parent. */
 	public set scaling(value: Vector3Like) {
 		fromRotationTranslationScale(
 			this.rotation,
@@ -204,23 +216,48 @@ export default class Node {
 
 	/**
 	 * Performs a function on this node and each of its children recursively.
-	 * @param f - The function to perform for each node. Receives as an argument the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
-	 * @param origin - The origin matrix.
+	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
 	 */
 	public traverse(
-		f: (worldMatrix: Matrix4Like) => boolean,
-		origin: Matrix4Like = identity(createMatrix4Like())
+		f:
+			| ((self: Node, worldMatrix: Matrix4Like) => boolean)
+			| ((self: Node, worldMatrix: Matrix4Like) => void)
 	): void {
-		const worldMatrix = multiply(origin, this.matrix, createMatrix4Like());
+		// Pass the origin as the original "parent world matrix."
+		this.traverseInternal(f, identity(createMatrix4Like()));
+	}
+
+	/**
+	 * Performs a function on this node and each of its children recursively.
+	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
+	 * @param parentWorldMatrix - The node's parent's world matrix.
+	 */
+	private traverseInternal(
+		f:
+			| ((self: Node, worldMatrix: Matrix4Like) => boolean)
+			| ((self: Node, worldMatrix: Matrix4Like) => void),
+		parentWorldMatrix: Matrix4Like
+	): void {
+		// Skip disabled nodes.
+		if (!this.enabled) {
+			return;
+		}
+
+		// Get this node's world matrix by multiplying its parent's world matrix by its transformation matrix.
+		const worldMatrix = multiply(
+			parentWorldMatrix,
+			this.matrix,
+			createMatrix4Like()
+		);
 
 		// Perform the function on this node; don't traverse this node's children if the function returns `true`.
-		if (f(worldMatrix)) {
+		if (f(this, worldMatrix)) {
 			return;
 		}
 
 		// Perform the function on each of this node's children.
 		for (const child of this.children) {
-			child.traverse(f, worldMatrix);
+			child.traverseInternal(f, worldMatrix);
 		}
 	}
 }
