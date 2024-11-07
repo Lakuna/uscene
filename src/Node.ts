@@ -231,6 +231,7 @@ export default class Node {
 	 * Performs a function on this node and each of its children recursively.
 	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
 	 * @param parentWorldMatrix - The node's parent's world matrix.
+	 * @internal
 	 */
 	private traverseInternal(
 		f:

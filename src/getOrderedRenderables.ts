@@ -12,6 +12,7 @@ import { getTranslation } from "@lakuna/umath/Matrix4";
  * @param scene - The root node of the scene.
  * @param eye - The position of the viewer/camera that will render the scene.
  * @returns A list of UI nodes, a list of opaque nodes, and a list of transparent nodes, in that order.
+ * @public
  */
 export default function getOrderedRenderables(
 	scene: Node,
