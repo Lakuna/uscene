@@ -53,7 +53,7 @@ export default function getOrderedRenderables(
 		if (self.transparent) {
 			for (let i = 0; i < transparentNodes.length; i++) {
 				const transparentDistNode = transparentNodes[i];
-				if (typeof transparentDistNode === "undefined") {
+				if (!transparentDistNode) {
 					continue;
 				}
 
@@ -73,7 +73,7 @@ export default function getOrderedRenderables(
 		// For opaque nodes, sort in proximity order.
 		for (let i = 0; i < opaqueNodes.length; i++) {
 			const opaqueDistNode = opaqueNodes[i];
-			if (typeof opaqueDistNode === "undefined") {
+			if (!opaqueDistNode) {
 				continue;
 			}
 
