@@ -1,6 +1,6 @@
 {
 	"name": "@lakuna/uscene",
-	"version": "1.3.0",
+	"version": "1.3.1",
 	"description": "A scene graph implementation using μMath.",
 	"homepage": "https://uscene.lakuna.pw",
 	"bugs": {
@@ -32,26 +32,23 @@
 		"beautify": "prettier . --write"
 	},
 	"devDependencies": {
-		"@eslint/js": "^9.15.0",
+		"@eslint/js": "^9.22.0",
 		"@types/eslint": "^9.6.1",
-		"@types/eslint__js": "^8.42.3",
 		"@types/eslint-config-prettier": "^6.11.3",
-		"eslint": "^9.15.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-prettier": "^5.2.1",
-		"eslint-plugin-tsdoc": "^0.3.0",
-		"husky": "^9.1.7",
-		"lint-staged": "^15.2.10",
-		"prettier": "^3.3.3",
-		"typedoc": "^0.26.11",
-		"typescript": "^5.6.3",
-		"typescript-eslint": "^8.15.0"
+		"eslint": "^9.22.0",
+		"eslint-config-prettier": "^10.1.1",
+		"eslint-plugin-prettier": "^5.2.3",
+		"eslint-plugin-tsdoc": "^0.4.0",
+		"prettier": "^3.5.3",
+		"typedoc": "^0.27.9",
+		"typescript": "^5.8.2",
+		"typescript-eslint": "^8.26.0"
 	},
 	"exports": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"type": "module",
 	"sideEffects": false,
 	"dependencies": {
-		"@lakuna/umath": "^1.3.8"
+		"@lakuna/umath": "^1.3.9"
 	}
 }
