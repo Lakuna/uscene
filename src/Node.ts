@@ -50,7 +50,6 @@ export default class Node {
 		return getTranslation(this.matrix, createVector3Like());
 	}
 
-	/** The translation of this node relative to its parent. */
 	public set translation(value: Vector3Like) {
 		setTranslation(this.matrix, value, this.matrix);
 	}
@@ -60,7 +59,6 @@ export default class Node {
 		return getRotation(this.matrix, createQuaternionLike());
 	}
 
-	/** The rotation of this node relative to its parent. */
 	public set rotation(value: QuaternionLike) {
 		fromRotationTranslationScale(
 			value,
@@ -70,12 +68,11 @@ export default class Node {
 		);
 	}
 
-	/** The scale of this node relative to its parent. */
+	/** The scaling of this node relative to its parent. */
 	public get scaling(): Float32Array & Vector3Like {
 		return getScaling(this.matrix, createVector3Like());
 	}
 
-	/** The scale of this node relative to its parent. */
 	public set scaling(value: Vector3Like) {
 		fromRotationTranslationScale(
 			this.rotation,
@@ -157,7 +154,6 @@ export default class Node {
 	 * The parent of this node.
 	 * @internal
 	 */
-	// eslint-disable-next-line no-use-before-define
 	private parentInternal: Node | undefined;
 
 	/** The parent of this node. */
@@ -165,7 +161,6 @@ export default class Node {
 		return this.parentInternal;
 	}
 
-	/** The parent of this node. */
 	public set parent(value: Node | undefined) {
 		if (value === this.parent) {
 			return;
@@ -179,7 +174,6 @@ export default class Node {
 	 * The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead).
 	 * @internal
 	 */
-	// eslint-disable-next-line no-use-before-define
 	private childrenInternal: Node[];
 
 	/** The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead). */
@@ -188,7 +182,7 @@ export default class Node {
 	}
 
 	/**
-	 * Adds a child to this node.
+	 * Add a child to this node.
 	 * @param node - The child.
 	 */
 	public addChild(node: Node): void {
@@ -201,7 +195,7 @@ export default class Node {
 	}
 
 	/**
-	 * Removes a child to this node.
+	 * Remove a child from this node.
 	 * @param node - The child.
 	 */
 	public removeChild(node: Node): void {
@@ -215,7 +209,7 @@ export default class Node {
 	}
 
 	/**
-	 * Performs a function on this node and each of its children recursively.
+	 * Perform a function on this node and each of its children recursively.
 	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
 	 */
 	public traverse(
@@ -228,7 +222,7 @@ export default class Node {
 	}
 
 	/**
-	 * Performs a function on this node and each of its children recursively.
+	 * Perform a function on this node and each of its children recursively.
 	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `true`, the node's children are not included in the traversal.
 	 * @param parentWorldMatrix - The node's parent's world matrix.
 	 * @internal

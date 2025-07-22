@@ -34,13 +34,13 @@ export default function getOrderedRenderables(
 	scene.traverse((self, worldMatrix) => {
 		// For non-renderable nodes, immediately pass on to children.
 		if (!(self instanceof RenderableNode)) {
-			return false;
+			return;
 		}
 
 		// For UI nodes, sort in traversal order.
 		if (self.ui) {
 			uiNodes.push([worldMatrix, self]);
-			return false;
+			return;
 		}
 
 		// Get the position of the node.
@@ -61,13 +61,13 @@ export default function getOrderedRenderables(
 				const [otherDist] = transparentDistNode;
 				if (otherDist < dist) {
 					transparentNodes.splice(i, 0, [dist, worldMatrix, self]);
-					return false;
+					return;
 				}
 			}
 
 			// If this is the nearest transparent node so far, just add it to the end of the list.
 			transparentNodes.push([dist, worldMatrix, self]);
-			return false;
+			return;
 		}
 
 		// For opaque nodes, sort in proximity order.
@@ -81,13 +81,12 @@ export default function getOrderedRenderables(
 			const [otherDist] = opaqueDistNode;
 			if (otherDist > dist) {
 				opaqueNodes.splice(i, 0, [dist, worldMatrix, self]);
-				return false;
+				return;
 			}
 		}
 
 		// If this is the farthest opaque node so far, just add it to the end of the list.
 		opaqueNodes.push([dist, worldMatrix, self]);
-		return false;
 	});
 
 	// Return the output lists, cutting off the squared distance portion of the opaque and transparent lists.
