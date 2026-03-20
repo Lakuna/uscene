@@ -1,11 +1,11 @@
 import {
-	type Matrix4Like,
 	createMatrix4Like,
 	fromRotationTranslationScale,
 	getRotation,
 	getScaling,
 	getTranslation,
 	identity,
+	type Matrix4Like,
 	multiply,
 	rotate,
 	rotateX,
@@ -17,41 +17,39 @@ import {
 	translate
 } from "@lakuna/umath/Matrix4";
 import {
-	type QuaternionLike,
-	createQuaternionLike
+	createQuaternionLike,
+	type QuaternionLike
 } from "@lakuna/umath/Quaternion";
-import { type Vector3Like, createVector3Like } from "@lakuna/umath/Vector3";
+import { createVector3Like, type Vector3Like } from "@lakuna/umath/Vector3";
 
 /**
  * A node in a scene graph.
  * @public
  */
 export default class Node {
-	/**
-	 * Create a node in a scene graph.
-	 * @param parent - The parent of the node. Should only be `undefined` for the root of a scene graph.
-	 * @param enabled - Whether or not the node should be enabled.
-	 */
-	public constructor(parent?: Node, enabled = true) {
-		this.matrix = identity(createMatrix4Like());
-		this.enabled = enabled;
-		this.parent = parent;
-		this.childrenInternal = [];
-	}
+	/** Whether or not this node is enabled. Disabled nodes and their descendents are not included in traversals. */
+	public enabled: boolean;
 
 	/** The transformation matrix of this node relative to its parent. */
 	public matrix: Matrix4Like;
 
-	/** Whether or not this node is enabled. Disabled nodes and their descendents are not included in traversals. */
-	public enabled: boolean;
-
-	/** The translation of this node relative to its parent. */
-	public get translation(): Readonly<Float32Array & Vector3Like> {
-		return getTranslation(this.matrix, createVector3Like());
+	/** The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead). */
+	public get children(): readonly Node[] {
+		return this.childrenInternal;
 	}
 
-	public set translation(value: Vector3Like) {
-		setTranslation(this.matrix, value, this.matrix);
+	/** The parent of this node. */
+	public get parent(): Node | undefined {
+		return this.parentInternal;
+	}
+
+	public set parent(value: Node | undefined) {
+		if (value === this.parent) {
+			return;
+		}
+
+		this.parent?.removeChild(this);
+		value?.addChild(this);
 	}
 
 	/** The rotation of this node relative to its parent. */
@@ -82,9 +80,69 @@ export default class Node {
 		);
 	}
 
+	/** The translation of this node relative to its parent. */
+	public get translation(): Readonly<Float32Array & Vector3Like> {
+		return getTranslation(this.matrix, createVector3Like());
+	}
+
+	public set translation(value: Vector3Like) {
+		setTranslation(this.matrix, value, this.matrix);
+	}
+
+	/**
+	 * The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead).
+	 * @internal
+	 */
+	private readonly childrenInternal: Node[];
+
+	/**
+	 * The parent of this node.
+	 * @internal
+	 */
+	private parentInternal: Node | undefined;
+
+	/**
+	 * Create a node in a scene graph.
+	 * @param parent - The parent of the node. Should only be `undefined` for the root of a scene graph.
+	 * @param enabled - Whether or not the node should be enabled.
+	 */
+	public constructor(parent?: Node, enabled = true) {
+		this.matrix = identity(createMatrix4Like());
+		this.enabled = enabled;
+		this.parent = parent;
+		this.childrenInternal = [];
+	}
+
+	/**
+	 * Add a child to this node.
+	 * @param node - The child.
+	 */
+	public addChild(node: Node): void {
+		if (this.children.includes(node)) {
+			return;
+		}
+
+		node.parentInternal = this;
+		this.childrenInternal.push(node);
+	}
+
 	/** Reset this node's transformation relative to its parent. */
 	public identity(): void {
 		identity(this.matrix);
+	}
+
+	/**
+	 * Remove a child from this node.
+	 * @param node - The child.
+	 */
+	public removeChild(node: Node): void {
+		const index = this.children.indexOf(node);
+		if (index < 0) {
+			return;
+		}
+
+		node.parentInternal = void 0;
+		this.childrenInternal.splice(index, 1);
 	}
 
 	/**
@@ -129,14 +187,6 @@ export default class Node {
 	}
 
 	/**
-	 * Translate this node relative to its parent.
-	 * @param t - The translation vector.
-	 */
-	public translate(t: Vector3Like): void {
-		translate(this.matrix, t, this.matrix);
-	}
-
-	/**
 	 * Position this node such that it is pointing at a target position.
 	 * @param eye - The new position of this node.
 	 * @param target - The position for this node to point at.
@@ -151,61 +201,11 @@ export default class Node {
 	}
 
 	/**
-	 * The parent of this node.
-	 * @internal
+	 * Translate this node relative to its parent.
+	 * @param t - The translation vector.
 	 */
-	private parentInternal: Node | undefined;
-
-	/** The parent of this node. */
-	public get parent(): Node | undefined {
-		return this.parentInternal;
-	}
-
-	public set parent(value: Node | undefined) {
-		if (value === this.parent) {
-			return;
-		}
-
-		this.parent?.removeChild(this);
-		value?.addChild(this);
-	}
-
-	/**
-	 * The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead).
-	 * @internal
-	 */
-	private childrenInternal: Node[];
-
-	/** The children of this node. Do not modify this value directly (use `addChild` and `removeChild` instead). */
-	public get children(): readonly Node[] {
-		return this.childrenInternal;
-	}
-
-	/**
-	 * Add a child to this node.
-	 * @param node - The child.
-	 */
-	public addChild(node: Node): void {
-		if (this.children.includes(node)) {
-			return;
-		}
-
-		node.parentInternal = this;
-		this.childrenInternal.push(node);
-	}
-
-	/**
-	 * Remove a child from this node.
-	 * @param node - The child.
-	 */
-	public removeChild(node: Node): void {
-		const index = this.children.indexOf(node);
-		if (index < 0) {
-			return;
-		}
-
-		node.parentInternal = void 0;
-		this.childrenInternal.splice(index, 1);
+	public translate(t: Vector3Like): void {
+		translate(this.matrix, t, this.matrix);
 	}
 
 	/**

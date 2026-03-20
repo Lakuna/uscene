@@ -1,4 +1,5 @@
 import type { Matrix4Like } from "@lakuna/umath";
+
 import Node from "./Node.js";
 
 /**
@@ -6,6 +7,12 @@ import Node from "./Node.js";
  * @public
  */
 export default abstract class RenderableNode extends Node {
+	/** Whether or not this node may be not completely opaque. */
+	public transparent: boolean;
+
+	/** Whether or not this node belongs to a user interface or a 2D scene. */
+	public ui: boolean;
+
 	/**
 	 * Create a renderable node in a scene graph.
 	 * @param parent - The parent of the node. Should only be `undefined` for the root of a scene graph.
@@ -23,12 +30,6 @@ export default abstract class RenderableNode extends Node {
 		this.transparent = transparent;
 		this.ui = ui;
 	}
-
-	/** Whether or not this node may be not completely opaque. */
-	public transparent: boolean;
-
-	/** Whether or not this node belongs to a user interface or a 2D scene. */
-	public ui: boolean;
 
 	/**
 	 * Render this node.

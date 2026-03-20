@@ -1,10 +1,12 @@
-import { type Matrix4Like, getTranslation } from "@lakuna/umath/Matrix4";
+import { getTranslation, type Matrix4Like } from "@lakuna/umath/Matrix4";
 import {
-	type Vector3Like,
 	createVector3Like,
-	squaredDistance
+	squaredDistance,
+	type Vector3Like
 } from "@lakuna/umath/Vector3";
+
 import type Node from "./Node.js";
+
 import RenderableNode from "./RenderableNode.js";
 
 /**

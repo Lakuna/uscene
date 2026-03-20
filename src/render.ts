@@ -1,5 +1,7 @@
-import type Node from "./Node.js";
 import type { Vector3Like } from "@lakuna/umath";
+
+import type Node from "./Node.js";
+
 import getOrderedRenderables from "./getOrderedRenderables.js";
 
 /**
