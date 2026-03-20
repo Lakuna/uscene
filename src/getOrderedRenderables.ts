@@ -5,7 +5,7 @@ import {
 	type Vector3Like
 } from "@lakuna/umath/Vector3";
 
-import type Node from "./Node.js";
+import type { ReadonlyNode } from "./Node.js";
 
 import RenderableNode from "./RenderableNode.js";
 
@@ -17,8 +17,8 @@ import RenderableNode from "./RenderableNode.js";
  * @public
  */
 export default function getOrderedRenderables(
-	scene: Node,
-	eye: Vector3Like = [0, 0, 0]
+	scene: ReadonlyNode,
+	eye: Readonly<Vector3Like> = [0, 0, 0]
 ): [
 	[Matrix4Like, RenderableNode][],
 	[Matrix4Like, RenderableNode][],
@@ -94,7 +94,9 @@ export default function getOrderedRenderables(
 	// Return the output lists, cutting off the squared distance portion of the opaque and transparent lists.
 	return [
 		uiNodes,
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		opaqueNodes.map(([, worldMatrix, node]) => [worldMatrix, node]),
+		// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
 		transparentNodes.map(([, worldMatrix, node]) => [worldMatrix, node])
 	];
 }
