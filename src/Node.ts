@@ -1,4 +1,5 @@
 import {
+	copy,
 	createMatrix4Like,
 	fromRotationTranslationScale,
 	getRotation,
@@ -64,6 +65,9 @@ export interface ReadonlyNode {
 	/** The scaling of this node relative to its parent. */
 	readonly scaling: Readonly<Vector3Like> & ReadonlyFloat32Array;
 
+	/** The root node of this node's scene. */
+	readonly scene: ReadonlyNode;
+
 	/** The translation of this node relative to its parent. */
 	readonly translation: Readonly<Vector3Like> & ReadonlyFloat32Array;
 
@@ -75,13 +79,19 @@ export interface ReadonlyNode {
 		f:
 			| ((
 					self: ReadonlyNode,
-					worldMatrix: Readonly<Matrix4Like> & ReadonlyFloat32Array
+					worldMat: Readonly<Matrix4Like> & ReadonlyFloat32Array
 			  ) => boolean)
 			| ((
 					self: ReadonlyNode,
-					worldMatrix: Readonly<Matrix4Like> & ReadonlyFloat32Array
+					worldMat: Readonly<Matrix4Like> & ReadonlyFloat32Array
 			  ) => void)
 	) => void;
+
+	/** The world matrix of this node, which represents its transformation relative to the origin. */
+	readonly worldMat: Readonly<Matrix4Like> & ReadonlyFloat32Array;
+
+	/** The translation of this node relative to the origin. */
+	readonly worldTranslation: Readonly<Vector3Like> & ReadonlyFloat32Array;
 }
 
 /**
@@ -145,6 +155,11 @@ export default class Node implements ReadonlyNode {
 		);
 	}
 
+	/** The root node of this node's scene. */
+	public get scene(): Node {
+		return this.parent?.scene ?? this;
+	}
+
 	/** The translation of this node relative to its parent. */
 	public get translation(): Readonly<Vector3Like> & ReadonlyFloat32Array {
 		return getTranslation(this.matrix, createVector3Like());
@@ -152,6 +167,21 @@ export default class Node implements ReadonlyNode {
 
 	public set translation(value: Readonly<Vector3Like>) {
 		setTranslation(this.matrix, value, this.matrix);
+	}
+
+	/** The world matrix of this node, which represents its transformation relative to the origin. */
+	public get worldMat(): Readonly<Matrix4Like> & ReadonlyFloat32Array {
+		if (!this.parent) {
+			return copy(this.matrix, createMatrix4Like());
+		}
+
+		const parentWorldMat = this.parent.worldMat;
+		return multiply(parentWorldMat, this.matrix, parentWorldMat);
+	}
+
+	/** The translation of this node relative to the origin. */
+	public get worldTranslation(): Readonly<Vector3Like> & ReadonlyFloat32Array {
+		return getTranslation(this.worldMat, createVector3Like());
 	}
 
 	/**
@@ -276,29 +306,29 @@ export default class Node implements ReadonlyNode {
 
 	/**
 	 * Perform a function on this node and each of its children recursively.
-	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `false`, the node's children are not included in the traversal.
+	 * @param f - The function to perform for each node. Receives as an argument the node and the node's transformation matrix relative to the node on which the traversal started. If this function returns `false`, the node's children are not included in the traversal.
 	 */
 	public traverse(
 		f: // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			| ((self: Node, worldMatrix: Float32Array & Matrix4Like) => boolean)
+			| ((self: Node, worldMat: Float32Array & Matrix4Like) => boolean)
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			| ((self: Node, worldMatrix: Float32Array & Matrix4Like) => void)
+			| ((self: Node, worldMat: Float32Array & Matrix4Like) => void)
 	): void {
-		this.traverseInternal(f, this.matrix);
+		this.traverseInternal(f, identity(createMatrix4Like()));
 	}
 
 	/**
 	 * Perform a function on this node and each of its children recursively.
-	 * @param f - The function to perform for each node. Receives as an argument the node and the node's world matrix. If this function returns `false`, the node's children are not included in the traversal.
-	 * @param parentWorldMatrix - The node's parent's world matrix.
+	 * @param f - The function to perform for each node. Receives as an argument the node and the node's transformation matrix relative to the node on which the traversal started. If this function returns `false`, the node's children are not included in the traversal.
+	 * @param parentMat - The node's parent's transformation matrix relative to the node on which the traversal started.
 	 * @internal
 	 */
 	private traverseInternal(
 		f: // eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			| ((self: Node, worldMatrix: Float32Array & Matrix4Like) => boolean)
+			| ((self: Node, worldMat: Float32Array & Matrix4Like) => boolean)
 			// eslint-disable-next-line @typescript-eslint/prefer-readonly-parameter-types
-			| ((self: Node, worldMatrix: Float32Array & Matrix4Like) => void),
-		parentWorldMatrix: Readonly<Matrix4Like>
+			| ((self: Node, worldMat: Float32Array & Matrix4Like) => void),
+		parentMat: Readonly<Matrix4Like>
 	): void {
 		// Skip disabled nodes.
 		if (!this.enabled) {
@@ -306,20 +336,16 @@ export default class Node implements ReadonlyNode {
 		}
 
 		// Get this node's world matrix by multiplying its parent's world matrix by its transformation matrix.
-		const worldMatrix = multiply(
-			parentWorldMatrix,
-			this.matrix,
-			createMatrix4Like()
-		);
+		const worldMat = multiply(parentMat, this.matrix, createMatrix4Like());
 
 		// Perform the function on this node; don't traverse this node's children if the function returns `false`.
-		if (!f(this, worldMatrix)) {
+		if (f(this, worldMat) === false) {
 			return;
 		}
 
 		// Perform the function on each of this node's children.
 		for (const child of this.childrenInternal) {
-			child.traverseInternal(f, worldMatrix);
+			child.traverseInternal(f, worldMat);
 		}
 	}
 }

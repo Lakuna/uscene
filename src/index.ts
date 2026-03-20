@@ -1,3 +1,4 @@
+export { default as Camera, type ReadonlyCamera } from "./Camera.js";
 export { default as getOrderedRenderables } from "./getOrderedRenderables.js";
 export {
 	default as Node,

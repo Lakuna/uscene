@@ -1,0 +1,222 @@
+<!doctype html>
+
+<html lang="en-US">
+	<head>
+		<title>Scene Graph</title>
+
+		<!-- Prevent the browser console from complaining. -->
+		<meta charset="utf-8" />
+		<link rel="icon" href="./assets/favicon.ico" />
+
+		<!-- Import map. -->
+		<script type="importmap">
+			{
+				"imports": {
+					"@lakuna/ugl": "../node_modules/@lakuna/ugl/dist/index.js",
+					"@lakuna/umath/Matrix4": "../node_modules/@lakuna/umath/dist/linalg/Matrix4.js",
+					"@lakuna/umath/Quaternion": "../node_modules/@lakuna/umath/dist/linalg/Quaternion.js",
+					"@lakuna/umath/Vector3": "../node_modules/@lakuna/umath/dist/linalg/Vector3.js",
+					"@lakuna/uscene": "../dist/index.js"
+				}
+			}
+		</script>
+
+		<!-- Test script. -->
+		<script type="module">
+			import { Camera, Node, RenderableNode, render } from "@lakuna/uscene";
+			import {
+				Context,
+				ElementBuffer,
+				Program,
+				VertexArray,
+				VertexBuffer
+			} from "@lakuna/ugl";
+			import {
+				createMatrix4Like,
+				ortho,
+				rotateZ,
+				scale,
+				translate
+			} from "@lakuna/umath/Matrix4";
+
+			const vss = `\
+			#version 300 es
+
+			in vec4 a_position;
+
+			uniform mat4 u_world;
+
+			out vec4 v_color;
+
+			void main() {
+				gl_Position = u_world * a_position;
+			}
+			`;
+
+			const fss = `\
+			#version 300 es
+
+			precision mediump float;
+
+			out vec4 outColor;
+
+			void main() {
+				outColor = vec4(0, 0, 0, 1);
+			}
+			`;
+
+			const positionData = new Float32Array([-1, 1, -1, -1, 1, -1, 1, 1]);
+
+			const indexData = new Uint8Array([0, 1, 2, 0, 2, 3]);
+
+			// μGL implementation.
+			function ugl(canvas) {
+				const gl = Context.get(canvas);
+
+				const program = Program.fromSource(gl, vss, fss);
+
+				const positionBuffer = new VertexBuffer(gl, positionData);
+				const indexBuffer = new ElementBuffer(gl, indexData);
+
+				const rectVao = new VertexArray(
+					program,
+					{ a_position: { size: 2, vbo: positionBuffer } },
+					indexBuffer
+				);
+
+				const matrix = createMatrix4Like();
+
+				return (now) => {
+					gl.resize();
+					gl.fbo.clear();
+
+					const w = canvas.width;
+					const h = canvas.height;
+					const min = Math.min(w, h);
+					ortho(0, w, 0, h, -1, 1, matrix);
+					translate(matrix, [w / 2, min / 5, 0], matrix);
+					scale(matrix, [min / 20, min / 20, 1], matrix);
+					for (let i = 0; i < 20; i++) {
+						translate(matrix, [10 * Math.sin(now * 0.001), 0, 0], matrix);
+						rotateZ(matrix, now * 0.001, matrix);
+						scale(matrix, [0.9, 0.9, 1], matrix);
+
+						gl.fbo.draw(rectVao, { u_world: matrix });
+					}
+				};
+			}
+
+			// μScene implementation.
+			function uscene(canvas) {
+				const gl = Context.get(canvas);
+
+				const program = Program.fromSource(gl, vss, fss);
+
+				const positionBuffer = new VertexBuffer(gl, positionData);
+				const indexBuffer = new ElementBuffer(gl, indexData);
+
+				const rectVao = new VertexArray(
+					program,
+					{ a_position: { size: 2, vbo: positionBuffer } },
+					indexBuffer
+				);
+
+				// Define how squares should be rendered.
+				class Square extends RenderableNode {
+					constructor() {
+						super(true, false, true);
+					}
+
+					render(now, u_world) {
+						this.identity();
+						this.translate([10 * Math.sin(now * 0.001), 0, 0]);
+						this.rotateZ(now * 0.001);
+						this.scale([0.9, 0.9, 1]);
+						gl.fbo.draw(rectVao, { u_world });
+					}
+				}
+
+				// Build the camera.
+				const camera = new Camera();
+
+				// Build the scene.
+				const scene = new Node();
+
+				// Build the squares.
+				let parent = scene;
+				for (let i = 0; i < 20; i++) {
+					const node = new Square();
+					parent.addChild(node);
+					parent = node;
+				}
+
+				return (now) => {
+					if (gl.resize()) {
+						// Get the canvas dimensions.
+						const w = canvas.width;
+						const h = canvas.height;
+						const min = Math.min(w, h);
+
+						// Update the camera.
+						camera.ortho(0, w, 0, h, -1, 1);
+
+						// Update the scene.
+						scene.identity();
+						scene.translate([w / 2, min / 5, 0]);
+						scene.scale([min / 20, min / 20, 1]);
+					}
+
+					gl.fbo.clear();
+
+					// Render the scene.
+					render(
+						scene,
+						(node, worldMat) => {
+							if (node instanceof Square) {
+								node.render(now, camera.getWorldViewProjMat(worldMat));
+							}
+						},
+						camera.translation
+					);
+				};
+			}
+
+			// Start after the canvases finish loading.
+			addEventListener("load", () => {
+				// Set up both rendering contexts, get separate update functions.
+				const uglUpdate = ugl(document.querySelector("canvas#ugl"));
+				const usceneUpdate = uscene(document.querySelector("canvas#uscene"));
+
+				// Create a combined update function.
+				function update(now) {
+					requestAnimationFrame(update);
+
+					// Update both canvases on every frame.
+					uglUpdate(now);
+					usceneUpdate(now);
+				}
+				requestAnimationFrame(update);
+			});
+		</script>
+
+		<!-- Canvas visibility style. -->
+		<style>
+			body {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			canvas {
+				border: 1px solid black;
+				width: 100%;
+				aspect-ratio: 3 / 2;
+				max-height: 90vh;
+			}
+		</style>
+	</head>
+	<body>
+		<canvas id="ugl"></canvas>
+		<canvas id="uscene"></canvas>
+	</body>
+</html>

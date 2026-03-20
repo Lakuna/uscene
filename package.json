@@ -29,10 +29,12 @@
 		"build": "tsc",
 		"doc": "typedoc",
 		"fix": "eslint src --fix",
-		"lint": "eslint src"
+		"lint": "eslint src",
+		"serve": "serve"
 	},
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
+		"@lakuna/ugl": "^26.1.5",
 		"@types/eslint": "^9.6.1",
 		"@types/eslint-config-prettier": "^6.11.3",
 		"eslint": "^10.0.3",
@@ -42,6 +44,7 @@
 		"eslint-plugin-tsdoc": "^0.5.2",
 		"globals": "^17.4.0",
 		"prettier": "^3.8.1",
+		"serve": "^14.2.6",
 		"typedoc": "^0.28.17",
 		"typescript": "^5.9.3",
 		"typescript-eslint": "^8.57.1"

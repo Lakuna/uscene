@@ -1,5 +1,3 @@
-import type { Matrix4Like } from "@lakuna/umath";
-
 import Node, { type ReadonlyNode } from "./Node.js";
 
 /**
@@ -40,9 +38,6 @@ export default abstract class RenderableNode
 		this.ui = ui;
 	}
 
-	/**
-	 * Render this node.
-	 * @param worldMatrix - The world matrix of this node.
-	 */
-	public abstract render(worldMatrix: Readonly<Matrix4Like>): void;
+	/** Render this node. */
+	public abstract render(): void;
 }
