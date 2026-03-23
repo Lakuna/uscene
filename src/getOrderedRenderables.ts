@@ -19,10 +19,10 @@ import RenderableNode from "./RenderableNode.js";
 export default function getOrderedRenderables(
 	scene: ReadonlyNode,
 	eye: Readonly<Vector3Like> = [0, 0, 0]
-): [
-	[RenderableNode, Readonly<Matrix4Like>][],
-	[RenderableNode, Readonly<Matrix4Like>][],
-	[RenderableNode, Readonly<Matrix4Like>][]
+): readonly [
+	readonly (readonly [RenderableNode, Readonly<Matrix4Like>])[],
+	readonly (readonly [RenderableNode, Readonly<Matrix4Like>])[],
+	readonly (readonly [RenderableNode, Readonly<Matrix4Like>])[]
 ] {
 	// Create the output lists.
 	const uiNodes: [RenderableNode, Readonly<Matrix4Like>][] = [];

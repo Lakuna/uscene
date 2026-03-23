@@ -1,26 +1,45 @@
 {
-	"name": "@lakuna/uscene",
-	"version": "2.0.0",
-	"description": "A scene graph implementation using μMath.",
-	"homepage": "https://uscene.lakuna.pw",
-	"bugs": {
-		"url": "https://github.com/Lakuna/uscene/issues",
-		"email": "travis@lakuna.pw"
-	},
-	"license": "MIT",
 	"author": {
-		"name": "Travis Martin",
 		"email": "travis@lakuna.pw",
+		"name": "Travis Martin",
 		"url": "https://www.lakuna.pw/"
 	},
-	"funding": {
-		"type": "individual",
-		"url": "https://github.com/sponsors/Lakuna"
+	"bugs": {
+		"email": "travis@lakuna.pw",
+		"url": "https://github.com/Lakuna/uscene/issues"
 	},
+	"dependencies": {
+		"@lakuna/umath": "^4.0.1"
+	},
+	"description": "A scene graph implementation using μMath.",
+	"devDependencies": {
+		"@eslint/js": "^10.0.1",
+		"@lakuna/ugl": "^26.1.5",
+		"@types/eslint": "^9.6.1",
+		"@types/eslint-config-prettier": "^6.11.3",
+		"eslint": "^10.1.0",
+		"eslint-config-prettier": "^10.1.8",
+		"eslint-plugin-perfectionist": "^5.7.0",
+		"eslint-plugin-prettier": "^5.5.5",
+		"eslint-plugin-tsdoc": "^0.5.2",
+		"prettier": "^3.8.1",
+		"serve": "^14.2.6",
+		"typedoc": "^0.28.18",
+		"typescript": "^5.9.3",
+		"typescript-eslint": "^8.57.1"
+	},
+	"exports": "./dist/index.js",
 	"files": [
 		"dist",
 		"src"
 	],
+	"funding": {
+		"type": "individual",
+		"url": "https://github.com/sponsors/Lakuna"
+	},
+	"homepage": "https://uscene.lakuna.pw/",
+	"license": "MIT",
+	"name": "@lakuna/uscene",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Lakuna/uscene.git"
@@ -32,28 +51,8 @@
 		"lint": "eslint src",
 		"serve": "serve"
 	},
-	"devDependencies": {
-		"@eslint/js": "^10.0.1",
-		"@lakuna/ugl": "^26.1.5",
-		"@types/eslint": "^9.6.1",
-		"@types/eslint-config-prettier": "^6.11.3",
-		"eslint": "^10.0.3",
-		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-perfectionist": "^5.7.0",
-		"eslint-plugin-prettier": "^5.5.5",
-		"eslint-plugin-tsdoc": "^0.5.2",
-		"globals": "^17.4.0",
-		"prettier": "^3.8.1",
-		"serve": "^14.2.6",
-		"typedoc": "^0.28.17",
-		"typescript": "^5.9.3",
-		"typescript-eslint": "^8.57.1"
-	},
-	"exports": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"type": "module",
 	"sideEffects": false,
-	"dependencies": {
-		"@lakuna/umath": "^3.0.1"
-	}
+	"type": "module",
+	"typings": "./dist/index.d.ts",
+	"version": "3.0.0"
 }

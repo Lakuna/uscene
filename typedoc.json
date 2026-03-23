@@ -1,9 +1,21 @@
 {
 	"$schema": "https://typedoc.org/schema.json",
 	"externalSymbolLinkMappings": {
+		"@lakuna/umath": {
+			"Matrix4Like": "https://umath.lakuna.pw/interfaces/Matrix4.Matrix4Like.html",
+			"QuaternionLike": "https://umath.lakuna.pw/interfaces/Quaternion.QuaternionLike.html",
+			"Vector3Like": "https://umath.lakuna.pw/interfaces/Vector3.Vector3Like.html"
+		},
 		"typescript": {
 			"ArrayBuffer": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
-			"Float32Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array"
+			"ArrayBufferLike": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer",
+			"Float32Array": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Float32Array",
+			"Omit": "https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys",
+			"Pick": "https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys",
+			"Readonly": "https://www.typescriptlang.org/docs/handbook/utility-types.html#readonlytype"
 		}
-	}
+	},
+	"hostedBaseUrl": "https://uscene.lakuna.pw/",
+	"name": "μScene",
+	"navigationLinks": { "GitHub": "https://github.com/Lakuna/uscene" }
 }

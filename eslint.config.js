@@ -1,14 +1,14 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import eslint from "@eslint/js";
 import perfectionist from "eslint-plugin-perfectionist";
 import prettier from "eslint-plugin-prettier/recommended";
 import tsdoc from "eslint-plugin-tsdoc";
 import { defineConfig } from "eslint/config";
-import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
+	{ ignores: ["dist", "docs"], name: "Ignore Generated Directories" },
 	eslint.configs.recommended,
-	{ languageOptions: { globals: globals.browser }, name: "Browser Globals" },
 	{
 		languageOptions: {
 			parserOptions: { ecmaFeatures: { impliedStrict: true } }
@@ -196,13 +196,13 @@ export default defineConfig(
 				"error",
 				{ format: ["strictCamelCase"], selector: "default" },
 				{ format: ["StrictPascalCase"], selector: "typeLike" },
-				{ format: ["strictCamelCase", "UPPER_CASE"], selector: "variableLike" },
 				{ format: ["UPPER_CASE"], selector: "enumMember" },
+				{ format: ["strictCamelCase", "StrictPascalCase"], selector: "import" },
 				{
-					format: ["strictCamelCase", "StrictPascalCase", "UPPER_CASE"],
-					selector: "import"
-				},
-				{ format: [], selector: "objectLiteralProperty" }
+					format: ["strictCamelCase", "UPPER_CASE"],
+					modifiers: ["const"],
+					selector: "variable"
+				}
 			],
 			// `@typescript-eslint/no-dupe-class-members` is automatically checked by the TypeScript compiler.
 			"@typescript-eslint/no-import-type-side-effects": "error",

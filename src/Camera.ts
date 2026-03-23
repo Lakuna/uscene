@@ -1,5 +1,3 @@
-import type { FieldOfView } from "@lakuna/umath";
-
 import {
 	createMatrix4Like,
 	invert,
@@ -137,16 +135,30 @@ export default class Camera extends Node implements ReadonlyCamera {
 
 	/**
 	 * Set this camera to use a perspective projection matrix generated from a field of view. Useful for generating projection matrices to be used with the WebXR API.
-	 * @param fov - The field of view.
+	 * @param left - The angle to the left of the field of view in degrees.
+	 * @param right - The angle to the right of the field of view in degrees.
+	 * @param bottom - The angle to the bottom of the field of view in degrees.
+	 * @param top - The angle to the top of the field of view in degrees.
 	 * @param near - The near bound of the frustum.
 	 * @param far - The far bound of the frustum.
 	 */
 	public perspectiveFromFov(
-		fov: Readonly<FieldOfView>,
+		left: number,
+		right: number,
+		bottom: number,
+		top: number,
 		near: number,
 		far: number
 	): void {
-		perspectiveFromFieldOfView(fov, near, far, this.projMat);
+		perspectiveFromFieldOfView(
+			left,
+			right,
+			bottom,
+			top,
+			near,
+			far,
+			this.projMat
+		);
 	}
 
 	/**
