@@ -9,24 +9,22 @@
 		"url": "https://github.com/Lakuna/uscene/issues"
 	},
 	"dependencies": {
-		"@lakuna/umath": "^4.0.5"
+		"@lakuna/umath": "^4.0.6"
 	},
 	"description": "A scene graph implementation using μMath.",
 	"devDependencies": {
 		"@eslint/js": "^10.0.1",
-		"@lakuna/ugl": "^27.0.0",
-		"@types/eslint": "^9.6.1",
-		"@types/eslint-config-prettier": "^6.11.3",
-		"eslint": "^10.1.0",
+		"@lakuna/ugl": "^27.1.1",
+		"eslint": "^10.3.0",
 		"eslint-config-prettier": "^10.1.8",
-		"eslint-plugin-perfectionist": "^5.7.0",
+		"eslint-plugin-perfectionist": "^5.9.0",
 		"eslint-plugin-prettier": "^5.5.5",
 		"eslint-plugin-tsdoc": "^0.5.2",
-		"prettier": "^3.8.1",
+		"prettier": "^3.8.3",
 		"serve": "^14.2.6",
-		"typedoc": "^0.28.18",
-		"typescript": "^6.0.2",
-		"typescript-eslint": "^8.58.0"
+		"typedoc": "^0.28.19",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.59.2"
 	},
 	"exports": "./dist/index.js",
 	"files": [
@@ -54,5 +52,5 @@
 	"sideEffects": false,
 	"type": "module",
 	"typings": "./dist/index.d.ts",
-	"version": "3.0.0"
+	"version": "3.0.1"
 }
